@@ -22,7 +22,10 @@ return array(
         'ZF\\Rest',
         'ZF\\Rpc',
         'ZF\\Versioning',
-        'Tasks'
+        'ZendDeveloperTools',
+        'DoctrineModule',
+        'DoctrineORMModule',
+        'Tasks',
     ),
     'module_listener_options' => array(
         'module_paths' => array(
