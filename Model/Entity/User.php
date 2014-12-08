@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
+ * @ORM\Table(name="user")
  */
 class User
 {
@@ -42,11 +43,21 @@ class User
      * @ORM\Column(type="string")
      */
     protected $surname;
+    
+    /**
+     * @ORM\ManyToMany(targetEntity="Group")
+     * @ORM\JoinTable(name="users_groups",
+     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id", unique=true)}
+     *      )
+     **/
+    private $groups;
 
     public function __construct()
     {
         $this->assignedTasks = new ArrayCollection();
         $this->reportedTasks = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     /**

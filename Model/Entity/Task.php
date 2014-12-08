@@ -5,6 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity (repositoryClass="Model\Repository\TaskRepository")
+ * @ORM\Table(name="task")
  */
 class Task
 {
@@ -32,6 +33,6 @@ class Task
      * @ORM\ManyToOne(targetEntity="Status", inversedBy="tasks")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id", nullable=false)
      */
-    protected $stauts;
+    protected $status;
 }
 ?>
