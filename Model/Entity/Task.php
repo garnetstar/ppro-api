@@ -27,5 +27,11 @@ class Task
      * @ORM\JoinColumn(name="reporter_id", referencedColumnName="id", nullable=false)
      */
     protected $reporter;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Status", inversedBy="tasks")
+     * @ORM\JoinColumn(name="status_id", referencedColumnName="id", nullable=false)
+     */
+    protected $stauts;
 }
 ?>
