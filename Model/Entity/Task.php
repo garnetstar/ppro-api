@@ -24,7 +24,7 @@ class Task
 
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="reportedTasks")
-     * @ORM\JoinColumn(name="reporter_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="reporter_id", referencedColumnName="id", nullable=false)
      */
     protected $reporter;
 }
