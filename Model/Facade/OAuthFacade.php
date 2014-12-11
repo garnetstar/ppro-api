@@ -13,7 +13,7 @@ class OAuthFacade extends AbstractFacade
      */
     public function isPublicClient($clientId)
     {
-        /** @var OAuthClient $client */
+        /* @var $client OAuthClient */
         $client = $this->em->find(OAuthClient::class, $clientId);
         
         if (empty($client)) {
@@ -21,6 +21,11 @@ class OAuthFacade extends AbstractFacade
         }
 
         return empty($client->getClientSecret());
+    }
+    
+    public function getUser($username)
+    {
+        
     }
 }
 
