@@ -3,6 +3,7 @@ namespace Tasks\V1\Rest\User;
 
 use ZF\ApiProblem\ApiProblem;
 use ZF\Rest\AbstractResourceListener;
+use Doctrine\Factory\DoctrineAdapterFactory;
 
 class UserResource extends AbstractResourceListener
 {
@@ -47,6 +48,7 @@ class UserResource extends AbstractResourceListener
      */
     public function fetch($id)
     {
+        
         return new ApiProblem(405, 'The GET method has not been defined for individual resources');
     }
 

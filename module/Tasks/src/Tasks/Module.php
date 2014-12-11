@@ -16,6 +16,7 @@ class Module implements ApigilityProviderInterface
             'ZF\Apigility\Autoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__,
+                    "Doctrine" => __DIR__."/../../../../Doctrine",
                 ),
             ),
         );

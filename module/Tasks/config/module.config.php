@@ -21,6 +21,7 @@ return array(
     'service_manager' => array(
         'factories' => array(
             'Tasks\\V1\\Rest\\User\\UserResource' => 'Tasks\\V1\\Rest\\User\\UserResourceFactory',
+           'Doctrine\\DoctrineAdapter' => 'Doctrine\\Factory\\DoctrineAdapterFactory',
         ),
     ),
     'zf-rest' => array(
