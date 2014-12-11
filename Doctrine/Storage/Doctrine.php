@@ -92,8 +92,6 @@ class Doctrine implements
 
     public function isPublicClient($client_id)
     {
-        echo sprintf('SELECT * from %s where client_id = :client_id', $this->config['client_table']);
-        die("asdf");
         $stmt = $this->db->prepare(sprintf('SELECT * from %s where client_id = :client_id', $this->config['client_table']));
         $stmt->execute(compact('client_id'));
 
