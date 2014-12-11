@@ -9,6 +9,7 @@ namespace Doctrine;
 use Zend\Crypt\Password\Bcrypt;
 use Doctrine\Storage\Doctrine;
 use Doctrine\ORM\EntityManager;
+use Model\Facade\OAuthFacade;
 
 /**
  * Extension of OAuth2\Storage\PDO that provides Bcrypt client_secret/password
@@ -85,9 +86,9 @@ class DoctrineAdapter extends Doctrine
      * @param string $connection
      * @param array $config
      */
-    public function __construct($connection, $config = array(), EntityManager $em)
+    public function __construct($connection, $config = array(), OAuthFacade $facade)
     {
-        parent::__construct($connection, $config, $em);
+        parent::__construct($connection, $config, $facade);
         if (isset($config['bcrypt_cost'])) {
             $this->setBcryptCost($config['bcrypt_cost']);
         }

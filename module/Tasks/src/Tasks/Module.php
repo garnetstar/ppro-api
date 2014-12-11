@@ -17,6 +17,7 @@ class Module implements ApigilityProviderInterface
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__,
                     "Doctrine" => __DIR__."/../../../../Doctrine",
+                    "Model" => __DIR__."/../../../../Model",
                 ),
             ),
         );

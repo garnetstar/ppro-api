@@ -40,6 +40,14 @@ class OAuthClient
      * @ORM\Column(length=255)
      */
     private $userId;
+
+    /**
+     * @return string
+     */
+    public function getClientSecret()
+    {
+        return $this->clientSecret;
+    }
 }
 
 

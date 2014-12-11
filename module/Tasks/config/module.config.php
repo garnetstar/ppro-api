@@ -1,4 +1,5 @@
 <?php
+use Model\Facade\OAuthFacade;
 return array(
     'router' => array(
         'routes' => array(
@@ -22,6 +23,12 @@ return array(
         'factories' => array(
             'Tasks\\V1\\Rest\\User\\UserResource' => 'Tasks\\V1\\Rest\\User\\UserResourceFactory',
            'Doctrine\\DoctrineAdapter' => 'Doctrine\\Factory\\DoctrineAdapterFactory',
+            'Model\\Facade\\OAuthFacade' => function ($serviceManager)
+            {
+                $em = $serviceManager->get('Doctrine\ORM\EntityManager');
+                $f = new OAuthFacade($em);
+                return $f;
+            }
         ),
     ),
     'zf-rest' => array(

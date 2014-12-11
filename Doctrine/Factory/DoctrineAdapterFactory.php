@@ -32,13 +32,13 @@ class DoctrineAdapterFactory implements FactoryInterface
             $oauth2ServerConfig = $config['zf-oauth2']['storage_settings'];
         }
         
-        $em = $services->get('Doctrine\ORM\EntityManager');
+        $facade = $services->get('Model\Facade\OAuthFacade');
 
         return new DoctrineAdapter(array(
             'dsn'      => $config['zf-oauth2']['db']['dsn'],
             'username' => $username,
             'password' => $password,
             'options'  => $options,
-        ), $oauth2ServerConfig, $em);
+        ), $oauth2ServerConfig, $facade);
     }
 }
