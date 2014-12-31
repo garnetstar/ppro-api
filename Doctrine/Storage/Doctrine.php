@@ -108,11 +108,13 @@ class Doctrine implements AuthorizationCodeInterface, AccessTokenInterface, Clie
     
     /* OAuth2\Storage\ClientInterface */
     public function getClientDetails($client_id)
-    {
-        $stmt = $this->db->prepare(sprintf('SELECT * from %s where client_id = :client_id', $this->config['client_table']));
-        $stmt->execute(compact('client_id'));
+    { 
+        return $this->facade->getClientDetails($client_id);
         
-        return $stmt->fetch();
+//         $stmt = $this->db->prepare(sprintf('SELECT * from %s where client_id = :client_id', $this->config['client_table']));
+//         $stmt->execute(compact('client_id'));
+        
+//         return $stmt->fetch();
     }
 
     public function setClientDetails($client_id, $client_secret = null, $redirect_uri = null, $grant_types = null, $scope = null, $user_id = null)
@@ -321,19 +323,21 @@ class Doctrine implements AuthorizationCodeInterface, AccessTokenInterface, Clie
 
     public function getUser($username)
     {
-        $stmt = $this->db->prepare($sql = sprintf('SELECT * from %s where username=:username', $this->config['user_table']));
-        $stmt->execute(array(
-            'username' => $username
-        ));
+        return $this->facade->getUser($username);
         
-        if (! $userInfo = $stmt->fetch()) {
-            return false;
-        }
+//         $stmt = $this->db->prepare($sql = sprintf('SELECT * from %s where username=:username', $this->config['user_table']));
+//         $stmt->execute(array(
+//             'username' => $username
+//         ));
         
-        // the default behavior is to use "username" as the user_id
-        return array_merge(array(
-            'user_id' => $username
-        ), $userInfo);
+//         if (! $userInfo = $stmt->fetch()) {
+//             return false;
+//         }
+        
+//         // the default behavior is to use "username" as the user_id
+//         return array_merge(array(
+//             'user_id' => $username
+//         ), $userInfo);
     }
 
     public function setUser($username, $password, $firstName = null, $lastName = null)

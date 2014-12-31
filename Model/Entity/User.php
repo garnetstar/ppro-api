@@ -17,7 +17,7 @@ class User
      * @ORM\Column(type="integer")
      */
     protected $id;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="Role", inversedBy="users")
      * @ORM\JoinColumn(name="role_id", referencedColumnName="id", nullable=false)
@@ -43,15 +43,30 @@ class User
      * @ORM\Column(type="string")
      */
     protected $surname;
-    
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    protected $username;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    protected $password;
+
     /**
      * @ORM\ManyToMany(targetEntity="Group")
      * @ORM\JoinTable(name="users_groups",
-     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id", unique=true)}
-     *      )
-     **/
+     * joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     * inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id", unique=true)}
+     * )
+     */
     private $groups;
+
+    /**
+     * @ORM\OneToMany(targetEntity="OAuthAccessTokens", mappedBy="user")
+     */
+    protected $accessTokens;
 
     public function __construct()
     {
@@ -68,5 +83,41 @@ class User
     {
         return $this->id;
     }
+
+    /**
+     *
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     *
+     * @return Role
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+    /**
+     * 
+     * @param int $roleId
+     * @return boolean
+     */
+    public function hasRole($roleId)
+    {
+        return $this->getRole()->getID() == $roleId;
+    }
 }
-?>

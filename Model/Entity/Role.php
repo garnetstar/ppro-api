@@ -10,6 +10,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Role
 {
+    const ADMIN = 1;
+    const USER = 2;
 
     /**
      * @ORM\Id

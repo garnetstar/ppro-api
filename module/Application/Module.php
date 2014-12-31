@@ -29,6 +29,8 @@ class Module
             'Zend\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
+                    "Model" => __DIR__."/../../Model",
+                    "Doctrine" => __DIR__."/../../Doctrine",
                 ),
             ),
         );

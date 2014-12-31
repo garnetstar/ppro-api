@@ -3,25 +3,50 @@ namespace Tasks\V1\Rest\User;
 
 use ZF\ApiProblem\ApiProblem;
 use ZF\Rest\AbstractResourceListener;
-use Doctrine\Factory\DoctrineAdapterFactory;
+use Model\Facade\UserFacade;
+use Model\Entity\User;
+use Model\Entity\Role;
 
 class UserResource extends AbstractResourceListener
 {
+
+    /**
+     *
+     * @var UserFacade
+     */
+    private $facade;
+
+    public function __construct(UserFacade $facade)
+    {
+        $this->facade = $facade;
+    }
+
     /**
      * Create a resource
      *
-     * @param  mixed $data
+     * @param mixed $data            
      * @return ApiProblem|mixed
      */
     public function create($data)
     {
+        /* @var $user User */
+        $user = $this->facade->getUserByIdentity($this->getIdentity());
+        
+        if ($user->hasRole(Role::ADMIN)) {
+            echo "creae new user";
+        } else {
+            echo "nejste admin";
+        }
+        die("asdf");
+        
+        return true;
         return new ApiProblem(405, 'The POST method has not been defined');
     }
 
     /**
      * Delete a resource
      *
-     * @param  mixed $id
+     * @param mixed $id            
      * @return ApiProblem|mixed
      */
     public function delete($id)
@@ -32,7 +57,7 @@ class UserResource extends AbstractResourceListener
     /**
      * Delete a collection, or members of a collection
      *
-     * @param  mixed $data
+     * @param mixed $data            
      * @return ApiProblem|mixed
      */
     public function deleteList($data)
@@ -43,19 +68,18 @@ class UserResource extends AbstractResourceListener
     /**
      * Fetch a resource
      *
-     * @param  mixed $id
+     * @param mixed $id            
      * @return ApiProblem|mixed
      */
     public function fetch($id)
     {
-        
         return new ApiProblem(405, 'The GET method has not been defined for individual resources');
     }
 
     /**
      * Fetch all or a subset of resources
      *
-     * @param  array $params
+     * @param array $params            
      * @return ApiProblem|mixed
      */
     public function fetchAll($params = array())
@@ -66,8 +90,8 @@ class UserResource extends AbstractResourceListener
     /**
      * Patch (partial in-place update) a resource
      *
-     * @param  mixed $id
-     * @param  mixed $data
+     * @param mixed $id            
+     * @param mixed $data            
      * @return ApiProblem|mixed
      */
     public function patch($id, $data)
@@ -78,7 +102,7 @@ class UserResource extends AbstractResourceListener
     /**
      * Replace a collection or members of a collection
      *
-     * @param  mixed $data
+     * @param mixed $data            
      * @return ApiProblem|mixed
      */
     public function replaceList($data)
@@ -89,8 +113,8 @@ class UserResource extends AbstractResourceListener
     /**
      * Update a resource
      *
-     * @param  mixed $id
-     * @param  mixed $data
+     * @param mixed $id            
+     * @param mixed $data            
      * @return ApiProblem|mixed
      */
     public function update($id, $data)

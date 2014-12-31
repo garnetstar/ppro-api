@@ -5,6 +5,8 @@ class UserResourceFactory
 {
     public function __invoke($services)
     {
-        return new UserResource();
+        $facade = $services->get('Model\Facade\UserFacade');
+        
+        return new UserResource($facade);
     }
 }

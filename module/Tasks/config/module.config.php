@@ -1,5 +1,4 @@
 <?php
-use Model\Facade\OAuthFacade;
 return array(
     'router' => array(
         'routes' => array(
@@ -22,13 +21,9 @@ return array(
     'service_manager' => array(
         'factories' => array(
             'Tasks\\V1\\Rest\\User\\UserResource' => 'Tasks\\V1\\Rest\\User\\UserResourceFactory',
-           'Doctrine\\DoctrineAdapter' => 'Doctrine\\Factory\\DoctrineAdapterFactory',
-            'Model\\Facade\\OAuthFacade' => function ($serviceManager)
-            {
-                $em = $serviceManager->get('Doctrine\ORM\EntityManager');
-                $f = new OAuthFacade($em);
-                return $f;
-            }
+            'Doctrine\\DoctrineAdapter' => 'Doctrine\\Factory\\DoctrineAdapterFactory',
+            'Model\\Facade\\OAuthFacade' => 'Model\\Factory\\OAuthFacadeFactory',
+            'Model\\Facade\\UserFacade' => 'Model\\Factory\\UserFacadeFactory',
         ),
     ),
     'zf-rest' => array(
@@ -42,6 +37,7 @@ return array(
                 1 => 'PATCH',
                 2 => 'PUT',
                 3 => 'DELETE',
+                4 => 'POST',
             ),
             'collection_http_methods' => array(
                 0 => 'GET',
@@ -106,6 +102,27 @@ return array(
                     'PUT' => false,
                     'DELETE' => false,
                 ),
+            ),
+        ),
+    ),
+    'zf-content-validation' => array(
+        'Tasks\\V1\\Rest\\User\\Controller' => array(
+            'input_filter' => 'Tasks\\V1\\Rest\\User\\Validator',
+        ),
+    ),
+    'input_filter_specs' => array(
+        'Tasks\\V1\\Rest\\User\\Validator' => array(
+            0 => array(
+                'name' => 'username',
+                'required' => true,
+                'filters' => array(),
+                'validators' => array(),
+            ),
+            1 => array(
+                'name' => 'password',
+                'required' => true,
+                'filters' => array(),
+                'validators' => array(),
             ),
         ),
     ),

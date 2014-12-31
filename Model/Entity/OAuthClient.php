@@ -42,6 +42,20 @@ class OAuthClient
     private $userId;
 
     /**
+     * @ORM\OneToMany(targetEntity="OAuthAccessTokens", mappedBy="client")
+     */
+    protected $accessTokens;
+    
+    /**
+     * @return int
+     */
+    public function getClientId()
+    {
+        return $this->clientId;
+    }
+
+    /**
+     *
      * @return string
      */
     public function getClientSecret()
