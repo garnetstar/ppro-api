@@ -4,7 +4,7 @@ namespace Model\Facade;
 use Model\Entity\OAuthClient;
 use Model\Entity\OAuthUser;
 use Model\Entity\User;
-use ZF\MvcAuth\Identity\AuthenticatedIdentity;
+use Model\Entity\OAuthAccessTokens;
 
 class OAuthFacade extends AbstractFacade
 {
@@ -40,20 +40,7 @@ class OAuthFacade extends AbstractFacade
             'user_id' => $user->getId(),
             'password' => $user->getPassword()
         );
-        
-        // $stmt = $this->db->prepare($sql = sprintf('SELECT * from %s where username=:username', $this->config['user_table']));
-        // $stmt->execute(array(
-        // 'username' => $username
-        // ));
-        
-        // if (! $userInfo = $stmt->fetch()) {
-        // return false;
-        // }
-        
-        // the default behavior is to use "username" as the user_id
-        // return array_merge(array(
-        // 'user_id' => $username
-        // ), $userInfo);
+
     }
 
     public function getClientDetails($clientId)
@@ -65,7 +52,54 @@ class OAuthFacade extends AbstractFacade
             "client_id" => $client->getClientId()
         );
     }
-    
 
+    public function getAccessToken($accessToken)
+    {
+        /* @var $res OAuthAccessTokens */
+        $res = $this->em->getRepository(OAuthAccessTokens::class)->findOneBy(array(
+            "accessToken" => $accessToken
+        ));
+        
+        if (! empty($res)) {
+            
+            /* @var $date \DateTime */
+            $date = $res->getExpires();
+            
+            return array(
+                "access_token" => $res->getAccessToken(),
+                "client_id" => $res->getClient()->getClientId(),
+                "user_id" => $res->getUser()->getId(),
+                "expires" => $date->getTimestamp(),
+                "scope" => $res->getScope(),
+            );
+        }
+        
+        return false;
+    }
+
+    /**
+     *
+     * @param unknown $accessToken            
+     * @param unknown $clientId            
+     * @param unknown $userId            
+     * @param unknown $expires            
+     * @param string $scope            
+     */
+    public function createAccessToken($accessToken, $clientId, $userId, $expires, $scope = null)
+    {
+        $client = $this->em->getPartialReference(OAuthClient::class, $clientId);
+        $user = $this->em->getPartialReference(User::class, $userId);
+        $expiresTime = new \DateTime($expires);
+        
+        $token = new OAuthAccessTokens();
+        $token->setAccessToken($accessToken)
+            ->setClient($client)
+            ->setUser($user)
+            ->setExpires($expiresTime)
+            ->setScope($scope);
+        
+        $this->em->persist($token);
+        $this->em->flush();
+    }
 }
 

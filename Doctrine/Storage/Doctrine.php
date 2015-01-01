@@ -145,15 +145,7 @@ class Doctrine implements AuthorizationCodeInterface, AccessTokenInterface, Clie
     /* OAuth2\Storage\AccessTokenInterface */
     public function getAccessToken($access_token)
     {
-        $stmt = $this->db->prepare(sprintf('SELECT * from %s where access_token = :access_token', $this->config['access_token_table']));
-        
-        $token = $stmt->execute(compact('access_token'));
-        if ($token = $stmt->fetch()) {
-            // convert date string back to timestamp
-            $token['expires'] = strtotime($token['expires']);
-        }
-        
-        return $token;
+        return $this->facade->getAccessToken($access_token);
     }
 
     public function setAccessToken($access_token, $client_id, $user_id, $expires, $scope = null)
@@ -163,12 +155,13 @@ class Doctrine implements AuthorizationCodeInterface, AccessTokenInterface, Clie
         
         // if it exists, update it.
         if ($this->getAccessToken($access_token)) {
+            die("update xxxxxxxxx");
             $stmt = $this->db->prepare(sprintf('UPDATE %s SET client_id=:client_id, expires=:expires, user_id=:user_id, scope=:scope where access_token=:access_token', $this->config['access_token_table']));
         } else {
-            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (access_token, client_id, expires, user_id, scope) VALUES (:access_token, :client_id, :expires, :user_id, :scope)', $this->config['access_token_table']));
+            $this->facade->createAccessToken($access_token, $client_id, $user_id, $expires, $scope);
         }
         
-        return $stmt->execute(compact('access_token', 'client_id', 'user_id', 'expires', 'scope'));
+        return true;
     }
     
     /* OAuth2\Storage\AuthorizationCodeInterface */
