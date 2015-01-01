@@ -40,7 +40,6 @@ class OAuthFacade extends AbstractFacade
             'user_id' => $user->getId(),
             'password' => $user->getPassword()
         );
-
     }
 
     public function getClientDetails($clientId)
@@ -48,9 +47,13 @@ class OAuthFacade extends AbstractFacade
         /* @var $client OAuthClient */
         $client = $this->em->find(OAuthClient::class, $clientId);
         
-        return array(
-            "client_id" => $client->getClientId()
-        );
+        if (! empty($client)) {
+            
+            return array(
+                "client_id" => $client->getClientId()
+            );
+        }
+        return false;
     }
 
     public function getAccessToken($accessToken)
@@ -70,7 +73,7 @@ class OAuthFacade extends AbstractFacade
                 "client_id" => $res->getClient()->getClientId(),
                 "user_id" => $res->getUser()->getId(),
                 "expires" => $date->getTimestamp(),
-                "scope" => $res->getScope(),
+                "scope" => $res->getScope()
             );
         }
         
