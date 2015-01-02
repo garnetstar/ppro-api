@@ -5,6 +5,7 @@ use Model\Entity\OAuthClient;
 use Model\Entity\OAuthUser;
 use Model\Entity\User;
 use Model\Entity\OAuthAccessTokens;
+use Model\Entity\OAuthRefreshTokens;
 
 class OAuthFacade extends AbstractFacade
 {
@@ -42,16 +43,19 @@ class OAuthFacade extends AbstractFacade
         );
     }
 
-    public function getClientDetails($clientId)
+    /**
+     *
+     * @param int $clientId            
+     * @return \Model\Entity\OAuthClient|boolean
+     */
+    public function getClientById($clientId)
     {
         /* @var $client OAuthClient */
         $client = $this->em->find(OAuthClient::class, $clientId);
         
         if (! empty($client)) {
             
-            return array(
-                "client_id" => $client->getClientId()
-            );
+            return $client;
         }
         return false;
     }
@@ -103,6 +107,52 @@ class OAuthFacade extends AbstractFacade
         
         $this->em->persist($token);
         $this->em->flush();
+    }
+
+    /**
+     *
+     * @param unknown $refresh_token            
+     * @param unknown $clientId            
+     * @param unknown $userId            
+     * @param unknown $expires            
+     * @param string $scope            
+     */
+    public function setRefreshToken($refresh_token, $clientId, $userId, $expires, $scope = null)
+    {
+        $client = $this->em->getPartialReference(OAuthClient::class, $clientId);
+        $user = $this->em->getPartialReference(User::class, $userId);
+        
+        $expiresTime = new \DateTime($expires);
+        
+        $refreshToken = new OAuthRefreshTokens();
+        $refreshToken->setRefreshToken($refresh_token)
+            ->setClient($client)
+            ->setUser($user)
+            ->setExpires($expiresTime)
+            ->setScope($scope);
+        
+        $this->em->persist($refreshToken);
+        $this->em->flush();
+    }
+
+    /**
+     * 
+     * @param string $refreshToken
+     * @return \Model\Facade\OAuthRefreshTokens|boolean
+     */
+    public function getRefreshToken($refreshToken)
+    {
+        /* @var $refreshTokenEntity OAuthRefreshTokens */
+        $refreshTokenEntity = $this->em->getRepository(OAuthRefreshTokens::class)->findOneBy(array(
+            "refreshToken" => $refreshToken
+        ));
+        
+        if ($refreshTokenEntity) {
+            
+            return $refreshTokenEntity;
+        }
+        
+        return false;
     }
 }
 

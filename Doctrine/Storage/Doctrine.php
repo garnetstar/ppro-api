@@ -95,26 +95,35 @@ class Doctrine implements AuthorizationCodeInterface, AccessTokenInterface, Clie
     {
         return $this->facade->isPublicClient($client_id);
         
-//         $stmt = $this->db->prepare(sprintf('SELECT * from %s where client_id = :client_id', $this->config['client_table']));
-//         $stmt->execute(compact('client_id'));
+        // $stmt = $this->db->prepare(sprintf('SELECT * from %s where client_id = :client_id', $this->config['client_table']));
+        // $stmt->execute(compact('client_id'));
         
-//         if (! $result = $stmt->fetch()) {
-//             return false;
-//         }
+        // if (! $result = $stmt->fetch()) {
+        // return false;
+        // }
         
-//         return empty($result['client_secret']);
-//         ;
+        // return empty($result['client_secret']);
+        // ;
     }
     
     /* OAuth2\Storage\ClientInterface */
-    public function getClientDetails($client_id)
-    { 
-        return $this->facade->getClientDetails($client_id);
+    public function getClientDetails($clientId)
+    {
+        $client = $this->facade->getClientById($clientId);
         
-//         $stmt = $this->db->prepare(sprintf('SELECT * from %s where client_id = :client_id', $this->config['client_table']));
-//         $stmt->execute(compact('client_id'));
+        if ($client) {
+            
+            return array(
+                "client_id" => $client->getClientId()
+            );
+        }
         
-//         return $stmt->fetch();
+        return false;
+        
+        // $stmt = $this->db->prepare(sprintf('SELECT * from %s where client_id = :client_id', $this->config['client_table']));
+        // $stmt->execute(compact('client_id'));
+        
+        // return $stmt->fetch();
     }
 
     public function setClientDetails($client_id, $client_secret = null, $redirect_uri = null, $grant_types = null, $scope = null, $user_id = null)
@@ -280,15 +289,26 @@ class Doctrine implements AuthorizationCodeInterface, AccessTokenInterface, Clie
     /* OAuth2\Storage\RefreshTokenInterface */
     public function getRefreshToken($refresh_token)
     {
-        $stmt = $this->db->prepare(sprintf('SELECT * FROM %s WHERE refresh_token = :refresh_token', $this->config['refresh_token_table']));
+        $refreshToken = $this->facade->getRefreshToken($refresh_token);
         
-        $token = $stmt->execute(compact('refresh_token'));
-        if ($token = $stmt->fetch()) {
-            // convert expires to epoch time
-            $token['expires'] = strtotime($token['expires']);
+        if ($refreshToken) {
+            return array("expires" => $refreshToken->getExpires()->getTimestamp(),
+                "client_id" => $refreshToken->getClient()->getClientId(),
+                "user_id" => $refreshToken->getUser()->getId(),
+                "scope" => $refreshToken->getScope(),
+            );
         }
+        return false;
         
-        return $token;
+//         $stmt = $this->db->prepare(sprintf('SELECT * FROM %s WHERE refresh_token = :refresh_token', $this->config['refresh_token_table']));
+        
+//         $token = $stmt->execute(compact('refresh_token'));
+//         if ($token = $stmt->fetch()) {
+//             // convert expires to epoch time
+//             $token['expires'] = strtotime($token['expires']);
+//         }
+        
+//         return $token;
     }
 
     public function setRefreshToken($refresh_token, $client_id, $user_id, $expires, $scope = null)
@@ -296,9 +316,13 @@ class Doctrine implements AuthorizationCodeInterface, AccessTokenInterface, Clie
         // convert expires to datestring
         $expires = date('Y-m-d H:i:s', $expires);
         
-        $stmt = $this->db->prepare(sprintf('INSERT INTO %s (refresh_token, client_id, user_id, expires, scope) VALUES (:refresh_token, :client_id, :user_id, :expires, :scope)', $this->config['refresh_token_table']));
+        $this->facade->setRefreshToken($refresh_token, $client_id, $user_id, $expires, $scope);
         
-        return $stmt->execute(compact('refresh_token', 'client_id', 'user_id', 'expires', 'scope'));
+        return true;
+        
+        // $stmt = $this->db->prepare(sprintf('INSERT INTO %s (refresh_token, client_id, user_id, expires, scope) VALUES (:refresh_token, :client_id, :user_id, :expires, :scope)', $this->config['refresh_token_table']));
+        
+        // return $stmt->execute(compact('refresh_token', 'client_id', 'user_id', 'expires', 'scope'));
     }
 
     public function unsetRefreshToken($refresh_token)
@@ -318,19 +342,19 @@ class Doctrine implements AuthorizationCodeInterface, AccessTokenInterface, Clie
     {
         return $this->facade->getUser($username);
         
-//         $stmt = $this->db->prepare($sql = sprintf('SELECT * from %s where username=:username', $this->config['user_table']));
-//         $stmt->execute(array(
-//             'username' => $username
-//         ));
+        // $stmt = $this->db->prepare($sql = sprintf('SELECT * from %s where username=:username', $this->config['user_table']));
+        // $stmt->execute(array(
+        // 'username' => $username
+        // ));
         
-//         if (! $userInfo = $stmt->fetch()) {
-//             return false;
-//         }
+        // if (! $userInfo = $stmt->fetch()) {
+        // return false;
+        // }
         
-//         // the default behavior is to use "username" as the user_id
-//         return array_merge(array(
-//             'user_id' => $username
-//         ), $userInfo);
+        // // the default behavior is to use "username" as the user_id
+        // return array_merge(array(
+        // 'user_id' => $username
+        // ), $userInfo);
     }
 
     public function setUser($username, $password, $firstName = null, $lastName = null)

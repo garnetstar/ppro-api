@@ -3,7 +3,6 @@
  * @license   http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
-
 namespace Doctrine;
 
 use Zend\Crypt\Password\Bcrypt;
@@ -17,17 +16,21 @@ use Model\Facade\OAuthFacade;
  */
 class DoctrineAdapter extends Doctrine
 {
+
     /**
+     *
      * @var int
      */
     protected $bcryptCost = 10;
 
     /**
+     *
      * @var Bcrypt
      */
     protected $bcrypt;
 
     /**
+     *
      * @return Bcrypt
      */
     public function getBcrypt()
@@ -36,12 +39,14 @@ class DoctrineAdapter extends Doctrine
             $this->bcrypt = new Bcrypt();
             $this->bcrypt->setCost($this->bcryptCost);
         }
-
+        
         return $this->bcrypt;
     }
 
     /**
-     * @param $value
+     *
+     * @param
+     *            $value
      * @return $this
      */
     public function setBcryptCost($value)
@@ -53,8 +58,8 @@ class DoctrineAdapter extends Doctrine
     /**
      * Check password using bcrypt
      *
-     * @param string $user
-     * @param string $password
+     * @param string $user            
+     * @param string $password            
      * @return bool
      */
     protected function checkPassword($user, $password)
@@ -63,7 +68,9 @@ class DoctrineAdapter extends Doctrine
     }
 
     /**
-     * @param $string
+     *
+     * @param
+     *            $string
      */
     protected function createBcryptHash(&$string)
     {
@@ -73,8 +80,10 @@ class DoctrineAdapter extends Doctrine
     /**
      * Check hash using bcrypt
      *
-     * @param $hash
-     * @param $check
+     * @param
+     *            $hash
+     * @param
+     *            $check
      * @return bool
      */
     protected function verifyHash($check, $hash)
@@ -83,8 +92,9 @@ class DoctrineAdapter extends Doctrine
     }
 
     /**
-     * @param string $connection
-     * @param array $config
+     *
+     * @param string $connection            
+     * @param array $config            
      */
     public function __construct($connection, $config = array(), OAuthFacade $facade)
     {
@@ -97,29 +107,32 @@ class DoctrineAdapter extends Doctrine
     /**
      * Check client credentials
      *
-     * @param string $client_id
-     * @param string $client_secret
+     * @param string $client_id            
+     * @param string $client_secret            
      * @return bool
      */
-    public function checkClientCredentials($client_id, $client_secret = null)
+    public function checkClientCredentials($clientId, $client_secret = null)
     {
-        $stmt = $this->db->prepare(sprintf('SELECT * from %s where client_id = :client_id', $this->config['client_table']));
-        $stmt->execute(compact('client_id'));
-        $result = $stmt->fetch();
-
+        $client = $this->facade->getClientById($clientId);
+        
+//         $stmt = $this->db->prepare(sprintf('SELECT * from %s where client_id = :client_id', $this->config['client_table']));
+//         $stmt->execute(compact('client_id'));
+//         $result = $stmt->fetch();
+        
         // bcrypt verify
-        return $this->verifyHash($client_secret, $result['client_secret']);
+        return $this->verifyHash($client_secret, $client->getClientSecret());
     }
 
     /**
      * Set client details
      *
-     * @param string $client_id
-     * @param string $client_secret
-     * @param string $redirect_uri
-     * @param string $grant_types
-     * @param string $scope_or_user_id If 5 arguments, user_id; if 6, scope.
-     * @param string $user_id
+     * @param string $client_id            
+     * @param string $client_secret            
+     * @param string $redirect_uri            
+     * @param string $grant_types            
+     * @param string $scope_or_user_id
+     *            If 5 arguments, user_id; if 6, scope.
+     * @param string $user_id            
      * @return bool
      */
     public function setClientDetails($client_id, $client_secret = null, $redirect_uri = null, $grant_types = null, $scope_or_user_id = null, $user_id = null)
@@ -128,10 +141,10 @@ class DoctrineAdapter extends Doctrine
             $scope = $scope_or_user_id;
         } else {
             $user_id = $scope_or_user_id;
-            $scope   = null;
+            $scope = null;
         }
-
-        if (!empty($client_secret)) {
+        
+        if (! empty($client_secret)) {
             $this->createBcryptHash($client_secret);
         }
         // if it exists, update it.
@@ -146,30 +159,24 @@ class DoctrineAdapter extends Doctrine
     /**
      * Set the user
      *
-     * @param string $username
-     * @param string $password
-     * @param string $firstName
-     * @param string $lastName
+     * @param string $username            
+     * @param string $password            
+     * @param string $firstName            
+     * @param string $lastName            
      * @return bool
      */
     public function setUser($username, $password, $firstName = null, $lastName = null)
     {
         // do not store in plaintext, use bcrypt
         $this->createBcryptHash($password);
-
+        
         // if it exists, update it.
         if ($this->getUser($username)) {
-            $stmt = $this->db->prepare(sprintf(
-                'UPDATE %s SET password=:password, first_name=:firstName, last_name=:lastName where username=:username',
-                $this->config['user_table']
-            ));
+            $stmt = $this->db->prepare(sprintf('UPDATE %s SET password=:password, first_name=:firstName, last_name=:lastName where username=:username', $this->config['user_table']));
         } else {
-            $stmt = $this->db->prepare(sprintf(
-                'INSERT INTO %s (username, password, first_name, last_name) VALUES (:username, :password, :firstName, :lastName)',
-                $this->config['user_table']
-            ));
+            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (username, password, first_name, last_name) VALUES (:username, :password, :firstName, :lastName)', $this->config['user_table']));
         }
-
+        
         return $stmt->execute(compact('username', 'password', 'firstName', 'lastName'));
     }
 }
