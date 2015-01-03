@@ -57,16 +57,21 @@ class User
     /**
      * @ORM\ManyToMany(targetEntity="Group")
      * @ORM\JoinTable(name="users_groups",
-     * joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
-     * inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id", unique=true)}
+     * joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")},
+     * inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id", unique=false)}
      * )
      */
     private $groups;
 
     /**
-     * @ORM\OneToMany(targetEntity="OAuthAccessTokens", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="OAuthAccessTokens", mappedBy="user", cascade={"remove"})
      */
     protected $accessTokens;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="OAuthRefreshTokens", mappedBy="user", cascade={"remove"})
+     */
+    protected $refreshTokens;
 
     public function __construct()
     {
@@ -120,4 +125,85 @@ class User
     {
         return $this->getRole()->getID() == $roleId;
     }
+
+    /**
+     * 
+     * @param Role $role
+     * @return \Model\Entity\User
+     */
+	public function setRole(Role $role)
+    {
+        $this->role = $role;
+        return $this;
+    }
+
+
+    /**
+     * 
+     * @param string $name
+     * @return \Model\Entity\User
+     */
+	public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * 
+     * @param string $surname
+     * @return \Model\Entity\User
+     */
+	public function setSurname($surname)
+    {
+        $this->surname = $surname;
+        return $this;
+    }
+
+    /**
+     * 
+     * @param string $username
+     * @return \Model\Entity\User
+     */
+	public function setUsername($username)
+    {
+        $this->username = $username;
+        return $this;
+    }
+
+    /**
+     * 
+     * @param string $password
+     * @return \Model\Entity\User
+     */
+	public function setPassword($password)
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * 
+     * @param array $groups
+     * @return \Model\Entity\User
+     */
+	public function setGroups(array $groups)
+    {
+        $this->groups = $groups;
+        return $this;
+    }
+
+    /**
+     * 
+     * @param string $accessTokens
+     * @return \Model\Entity\User
+     */
+	public function setAccessTokens($accessTokens)
+    {
+        $this->accessTokens = $accessTokens;
+        return $this;
+    }
+
+    
+    
 }

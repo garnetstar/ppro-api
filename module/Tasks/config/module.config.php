@@ -49,7 +49,6 @@ return array(
                 1 => 'PATCH',
                 2 => 'PUT',
                 3 => 'DELETE',
-                4 => 'POST',
             ),
             'collection_http_methods' => array(
                 0 => 'GET',
@@ -149,7 +148,7 @@ return array(
                     'POST' => true,
                     'PATCH' => false,
                     'PUT' => false,
-                    'DELETE' => false,
+                    'DELETE' => true,
                 ),
                 'collection' => array(
                     'GET' => false,
@@ -192,12 +191,57 @@ return array(
                 'required' => true,
                 'filters' => array(),
                 'validators' => array(),
+                'allow_empty' => false,
+                'continue_if_empty' => false,
             ),
             1 => array(
                 'name' => 'password',
                 'required' => true,
                 'filters' => array(),
                 'validators' => array(),
+                'allow_empty' => false,
+                'continue_if_empty' => false,
+            ),
+            2 => array(
+                'name' => 'groups',
+                'required' => true,
+                'filters' => array(),
+                'validators' => array(),
+                'description' => 'Group do kterých bude uživatel patřit.
+id entit Group oddělených čárkou.',
+                'allow_empty' => false,
+                'continue_if_empty' => false,
+            ),
+            3 => array(
+                'name' => 'name',
+                'required' => true,
+                'filters' => array(),
+                'validators' => array(),
+                'allow_empty' => false,
+                'continue_if_empty' => false,
+            ),
+            4 => array(
+                'name' => 'surname',
+                'required' => true,
+                'filters' => array(),
+                'validators' => array(),
+                'allow_empty' => false,
+                'continue_if_empty' => false,
+            ),
+            5 => array(
+                'name' => 'role',
+                'required' => true,
+                'filters' => array(),
+                'validators' => array(
+                    0 => array(
+                        'name' => 'Zend\\Validator\\Regex',
+                        'options' => array(
+                            'pattern' => '/^(admin|user)$/',
+                        ),
+                    ),
+                ),
+                'allow_empty' => false,
+                'continue_if_empty' => false,
             ),
         ),
         'Tasks\\V1\\Rest\\Group\\Validator' => array(

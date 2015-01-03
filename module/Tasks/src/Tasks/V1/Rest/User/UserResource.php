@@ -6,6 +6,7 @@ use ZF\Rest\AbstractResourceListener;
 use Model\Facade\UserFacade;
 use Model\Entity\User;
 use Model\Entity\Role;
+use Model\Facade\GroupFacade;
 
 class UserResource extends AbstractResourceListener
 {
@@ -16,9 +17,16 @@ class UserResource extends AbstractResourceListener
      */
     private $facade;
 
-    public function __construct(UserFacade $facade)
+    /**
+     *
+     * @var GroupFacade
+     */
+    private $groupFacade;
+
+    public function __construct(UserFacade $facade, GroupFacade $groupFacade)
     {
         $this->facade = $facade;
+        $this->groupFacade = $groupFacade;
     }
 
     /**
@@ -33,14 +41,38 @@ class UserResource extends AbstractResourceListener
         $user = $this->facade->getUserByIdentity($this->getIdentity());
         
         if ($user->hasRole(Role::ADMIN)) {
-            echo "creae new user";
+            
+            $groupIDs = array_map(function ($piece)
+            {
+                return (int) trim($piece);
+            }, explode(",", $data->groups));
+
+            $groups = $this->groupFacade->getGroupsByIDs($groupIDs);
+            
+            if (! $groups) {
+                return new ApiProblem(400, sprintf('Nepodařilo se najít odpovídající Group podle \'%s\'', $data->groups));
+            }
+            
+            switch ($data->role) {
+                case "admin":
+                    $roleID = 1;
+                    break;
+                case "user":
+                    $roleID = 2;
+                    break;
+                default:
+                    return new ApiProblem(400, sprintf('Nepodařilo se najít odpovídající Roli podle \'%s\'', $data->role));
+            }
+            
+            $user = $this->facade->addUser($data->username, $data->password, $data->name, $data->surname, $roleID, $groups);
+            
+            return array(
+                "id" => $user->getId(),
+            );
+            
         } else {
-            echo "nejste admin";
+            return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
         }
-        die("asdf");
-        
-        return true;
-        return new ApiProblem(405, 'The POST method has not been defined');
     }
 
     /**
@@ -51,7 +83,14 @@ class UserResource extends AbstractResourceListener
      */
     public function delete($id)
     {
-        return new ApiProblem(405, 'The DELETE method has not been defined for individual resources');
+        /* @var $user User */
+        $user = $this->facade->getUserByIdentity($this->getIdentity());
+        
+        if ($user->hasRole(Role::ADMIN)) {
+            return $this->facade->deleteUser($id);
+        } else {
+            return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
+        }
     }
 
     /**

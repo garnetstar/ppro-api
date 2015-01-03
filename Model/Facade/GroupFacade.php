@@ -2,6 +2,8 @@
 namespace Model\Facade;
 
 use Model\Entity\Group;
+use Zend\Crypt\PublicKey\Rsa\PublicKey;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  *
@@ -59,10 +61,29 @@ class GroupFacade extends AbstractFacade
     }
 
     /**
+     *
      * @return array
      */
     public function getAll()
     {
         return $this->em->getRepository(Group::class)->findAll();
+    }
+
+    /**
+     *
+     * @param array $groupIds            
+     * @return Group[]
+     */
+    public function getGroupsByIDs(array $groupIds)
+    {
+        $groups = [];
+        foreach ($groupIds as $groupID) {
+            $group = $this->em->find(Group::class, $groupID);
+            if (! $group) {
+                return false;
+            }
+            $groups[] = $group;
+        }
+        return $groups;
     }
 }

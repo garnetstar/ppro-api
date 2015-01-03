@@ -3,6 +3,7 @@ namespace Model\Facade;
 
 use ZF\MvcAuth\Identity\AuthenticatedIdentity;
 use Model\Entity\User;
+use Model\Entity\Role;
 
 /**
  *
@@ -12,11 +13,60 @@ use Model\Entity\User;
 class UserFacade extends AbstractFacade
 {
 
+    /**
+     *
+     * @param AuthenticatedIdentity $identity            
+     * @return Ambigous <object, NULL, unknown>
+     */
     public function getUserByIdentity(AuthenticatedIdentity $identity)
     {
         $userId = $identity->getAuthenticationIdentity()["user_id"];
         
         return $this->em->find(User::class, $userId);
+    }
+
+    /**
+     *
+     * @param unknown $username            
+     * @param unknown $password            
+     * @param unknown $name            
+     * @param unknown $surname            
+     * @param unknown $roleID            
+     * @param array $groupIds            
+     */
+    public function addUser($username, $password, $name, $surname, $roleID, array $groups)
+    {
+        $role = $this->em->getPartialReference(Role::class, $roleID);
+        
+        $user = new User();
+        $user->setUsername($username)
+            ->setPassword($password)
+            ->setName($name)
+            ->setSurname($surname)
+            ->setRole($role)
+            ->setGroups($groups);
+        
+        $this->em->persist($user);
+        $this->em->flush();
+        return $user;
+    }
+
+    /**
+     * 
+     * @param int $userID
+     * @return boolean
+     */
+    public function deleteUser($userID)
+    {
+        $user = $this->em->find(User::class, $userID);
+        
+        if (! $user) {
+            return false;
+        }
+        
+        $this->em->remove($user);
+        $this->em->flush();
+        return true;
     }
 }
 
