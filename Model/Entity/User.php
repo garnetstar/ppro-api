@@ -84,7 +84,7 @@ class User
      *
      * @return the $id
      */
-    public function getId()
+    public function getID()
     {
         return $this->id;
     }
@@ -236,6 +236,7 @@ class User
         }
         
         return array(
+            "id" => $this->getID(),
             "name" => $this->name,
             "surname" => $this->surname,
             "roleID" => $this->role->getID(),
