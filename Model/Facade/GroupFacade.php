@@ -14,7 +14,7 @@ class GroupFacade extends AbstractFacade
     /**
      *
      * @param string $name            
-     * @return boolean
+     * @return Group
      */
     public function addGroup($name)
     {
@@ -23,7 +23,7 @@ class GroupFacade extends AbstractFacade
         
         $this->em->persist($group);
         $this->em->flush();
-        return true;
+        return $group;
     }
 
     /**

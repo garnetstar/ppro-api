@@ -41,8 +41,13 @@ class GroupResource extends AbstractResourceListener
         $user = $this->userFacade->getUserByIdentity($this->getIdentity());
         
         if ($user->hasRole(Role::ADMIN)) {
-            $this->groupFacade->addGroup($data->name);
-            return true;
+            
+            $group = $this->groupFacade->addGroup($data->name);
+            
+            return array(
+                "id" => $group->getID(),
+                "name" => $group->getName()
+            );
         } else {
             return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
         }
