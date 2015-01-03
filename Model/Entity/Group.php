@@ -4,7 +4,7 @@ namespace Model\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Model\Repository\GroupRepository")
  * @ORM\Table(name="groupuser")
  */
 class Group

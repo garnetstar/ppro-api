@@ -7,6 +7,7 @@ use Model\Facade\TaskFacade;
 use Model\Facade\UserFacade;
 use Model\Entity\Role;
 use Model\Entity\User;
+use Model\Facade\GroupFacade;
 
 class TaskResource extends AbstractResourceListener
 {
@@ -23,10 +24,17 @@ class TaskResource extends AbstractResourceListener
      */
     private $userFacade;
 
-    public function __construct($taskFacade, $userFacade)
+    /**
+     *
+     * @var GroupFacade
+     */
+    private $groupFacade;
+
+    public function __construct($taskFacade, $userFacade, $groupFacade)
     {
         $this->taskFacade = $taskFacade;
         $this->userFacade = $userFacade;
+        $this->groupFacade = $groupFacade;
     }
 
     /**
@@ -59,7 +67,9 @@ class TaskResource extends AbstractResourceListener
                 return new ApiProblem(403, 'Uživatel musí být reporter.');
             }
             // user může přidělit task pouze uživatelům ve své skupině
-            // @todo
+            if (! $this->groupFacade->isInGroup($user, $assignee)) {
+                return new ApiProblem(403, 'Uživatelé musí být ve stejné skupině.');
+            }
         }
         
         if (! $reporter) {

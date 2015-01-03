@@ -4,6 +4,8 @@ namespace Model\Facade;
 use Model\Entity\Group;
 use Zend\Crypt\PublicKey\Rsa\PublicKey;
 use Doctrine\Common\Collections\ArrayCollection;
+use Model\Entity\User;
+use Model\Repository\GroupRepository;
 
 /**
  *
@@ -85,5 +87,39 @@ class GroupFacade extends AbstractFacade
             $groups[] = $group;
         }
         return $groups;
+    }
+
+    /**
+     * Zkontroluje zda jsou uživatelé ve stejné skupině
+     * 
+     * @param User $firstUser
+     * @param User $secondUser
+     * @return boolean
+     */
+    public function isInGroup(User $firstUser, User $secondUser)
+    {
+        $firstGroups = $this->getGroupsByUserID($firstUser);
+        $secondGroups = $this->getGroupsByUserID($secondUser);
+        
+        $intersec = array_intersect($firstGroups, $secondGroups);
+        
+        return ! empty($intersec);
+    }
+
+    /**
+     * 
+     * @param User $user
+     * @return multitype:
+     */
+    public function getGroupsByUserID(User $user)
+    {
+        $groups = $user->getGroups()->toArray();
+        
+        $groupIDs = array_map(function (Group $group)
+        {
+            return $group->getID();
+        }, $groups);
+        
+        return $groupIDs;
     }
 }
