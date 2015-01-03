@@ -144,14 +144,14 @@ return array(
         'authorization' => array(
             'Tasks\\V1\\Rest\\User\\Controller' => array(
                 'entity' => array(
-                    'GET' => false,
+                    'GET' => true,
                     'POST' => true,
                     'PATCH' => false,
                     'PUT' => false,
                     'DELETE' => true,
                 ),
                 'collection' => array(
-                    'GET' => false,
+                    'GET' => true,
                     'POST' => true,
                     'PATCH' => false,
                     'PUT' => false,

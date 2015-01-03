@@ -52,8 +52,8 @@ class UserFacade extends AbstractFacade
     }
 
     /**
-     * 
-     * @param int $userID
+     *
+     * @param int $userID            
      * @return boolean
      */
     public function deleteUser($userID)
@@ -67,6 +67,24 @@ class UserFacade extends AbstractFacade
         $this->em->remove($user);
         $this->em->flush();
         return true;
+    }
+
+    /**
+     *
+     * @param unknown $userID            
+     * @return User
+     */
+    public function getUserByID($userID)
+    {
+        return $this->em->find(User::class, $userID);
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getAll()
+    {
+        return $this->em->getRepository(User::class)->findAll();
     }
 }
 

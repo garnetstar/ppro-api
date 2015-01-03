@@ -46,7 +46,7 @@ class UserResource extends AbstractResourceListener
             {
                 return (int) trim($piece);
             }, explode(",", $data->groups));
-
+            
             $groups = $this->groupFacade->getGroupsByIDs($groupIDs);
             
             if (! $groups) {
@@ -64,12 +64,11 @@ class UserResource extends AbstractResourceListener
                     return new ApiProblem(400, sprintf('Nepodařilo se najít odpovídající Roli podle \'%s\'', $data->role));
             }
             
-            $user = $this->facade->addUser($data->username, $data->password, $data->name, $data->surname, $roleID, $groups);
+            $user = $this->facade->addUser($data->username, sha1($data->password), $data->name, $data->surname, $roleID, $groups);
             
             return array(
-                "id" => $user->getId(),
+                "id" => $user->getId()
             );
-            
         } else {
             return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
         }
@@ -112,7 +111,16 @@ class UserResource extends AbstractResourceListener
      */
     public function fetch($id)
     {
-        return new ApiProblem(405, 'The GET method has not been defined for individual resources');
+        $user = $this->facade->getUserByIdentity($this->getIdentity());
+        if ($user->hasRole(Role::ADMIN) || $id == $user->getId()) {
+            $returnUser = $this->facade->getUserByID($id);
+            if ($returnUser) {
+                return $returnUser->toArray();
+            }
+            return false;
+        } else {
+            return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
+        }
     }
 
     /**
@@ -123,7 +131,19 @@ class UserResource extends AbstractResourceListener
      */
     public function fetchAll($params = array())
     {
-        return new ApiProblem(405, 'The GET method has not been defined for collections');
+        $user = $this->facade->getUserByIdentity($this->getIdentity());
+        
+        if ($user->hasRole(Role::ADMIN)) {
+            $users = $this->facade->getAll();
+            $usersArray = [];
+            foreach ($users as $user) {
+                $usersArray[] = $user->toArray();
+            }
+            
+            return $usersArray;
+        } else {
+            return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
+        }
     }
 
     /**

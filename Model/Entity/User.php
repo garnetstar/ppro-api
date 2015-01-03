@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="user")
+ * @ORM\Table(name="user", options={"type"="InnoDB","charset"="utf8","collate"="utf8_czech_ci"})
  */
 class User
 {
@@ -67,7 +67,7 @@ class User
      * @ORM\OneToMany(targetEntity="OAuthAccessTokens", mappedBy="user", cascade={"remove"})
      */
     protected $accessTokens;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="OAuthRefreshTokens", mappedBy="user", cascade={"remove"})
      */
@@ -117,8 +117,8 @@ class User
     }
 
     /**
-     * 
-     * @param int $roleId
+     *
+     * @param int $roleId            
      * @return boolean
      */
     public function hasRole($roleId)
@@ -127,83 +127,121 @@ class User
     }
 
     /**
-     * 
-     * @param Role $role
+     *
+     * @param Role $role            
      * @return \Model\Entity\User
      */
-	public function setRole(Role $role)
+    public function setRole(Role $role)
     {
         $this->role = $role;
         return $this;
     }
 
-
     /**
-     * 
-     * @param string $name
+     *
+     * @param string $name            
      * @return \Model\Entity\User
      */
-	public function setName($name)
+    public function setName($name)
     {
         $this->name = $name;
         return $this;
     }
 
     /**
-     * 
-     * @param string $surname
+     *
+     * @param string $surname            
      * @return \Model\Entity\User
      */
-	public function setSurname($surname)
+    public function setSurname($surname)
     {
         $this->surname = $surname;
         return $this;
     }
 
     /**
-     * 
-     * @param string $username
+     *
+     * @param string $username            
      * @return \Model\Entity\User
      */
-	public function setUsername($username)
+    public function setUsername($username)
     {
         $this->username = $username;
         return $this;
     }
 
     /**
-     * 
-     * @param string $password
+     *
+     * @param string $password            
      * @return \Model\Entity\User
      */
-	public function setPassword($password)
+    public function setPassword($password)
     {
         $this->password = $password;
         return $this;
     }
 
     /**
-     * 
-     * @param array $groups
+     *
+     * @param array $groups            
      * @return \Model\Entity\User
      */
-	public function setGroups(array $groups)
+    public function setGroups(array $groups)
     {
         $this->groups = $groups;
         return $this;
     }
 
     /**
-     * 
-     * @param string $accessTokens
+     *
+     * @param string $accessTokens            
      * @return \Model\Entity\User
      */
-	public function setAccessTokens($accessTokens)
+    public function setAccessTokens($accessTokens)
     {
         $this->accessTokens = $accessTokens;
         return $this;
     }
 
-    
-    
+    /**
+     *
+     * @return string
+     */
+    public function getSurname()
+    {
+        return $this->surname;
+    }
+
+    /**
+     *
+     * @return Group[]
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $groupIDs = [];
+        $groupNames = [];
+        
+        foreach ($this->getGroups() as $group) {
+            $groupIDs[] = $group->getID();
+            $groupNames[] = $group->getName();
+        }
+        
+        return array(
+            "name" => $this->name,
+            "surname" => $this->surname,
+            "roleID" => $this->role->getID(),
+            "role" => $this->role->getName(),
+            "groupIDs" => $groupIDs,
+            "groups" => $groupNames,
+        );
+    }
 }

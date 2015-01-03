@@ -62,10 +62,10 @@ class DoctrineAdapter extends Doctrine
      * @param string $password            
      * @return bool
      */
-    protected function checkPassword($user, $password)
-    {
-        return $this->verifyHash($password, $user['password']);
-    }
+//     protected function checkPassword($user, $password)
+//     {
+//         return $this->verifyHash($password, $user['password']);
+//     }
 
     /**
      *
