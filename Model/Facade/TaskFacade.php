@@ -40,4 +40,16 @@ class TaskFacade extends AbstractFacade
         
         return $task;
     }
+
+    /**
+     * 
+     * @param string $sort
+     * @return Task[]
+     */
+    public function getAll($sort = "asc")
+    {
+        return $this->em->getRepository(Task::class)->findBy(array(), array(
+            "created" => $sort
+        ));
+    }
 }

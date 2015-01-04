@@ -4,7 +4,7 @@ namespace Model\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity (repositoryClass="Model\Repository\TaskRepository")
+ * @ORM\Entity
  * @ORM\Table(name="task")
  */
 class Task
@@ -36,6 +36,11 @@ class Task
     protected $status;
 
     /**
+     * @ORM\Column(type="datetime")
+     */
+    private $created;
+
+    /**
      * @ORM\Column(type="string")
      */
     protected $title;
@@ -44,6 +49,11 @@ class Task
      * @ORM\Column(type="string")
      */
     protected $description;
+
+    public function __construct()
+    {
+        $this->created = new \DateTime();
+    }
 
     public function getTitle()
     {
@@ -99,6 +109,24 @@ class Task
 
     /**
      *
+     * @return User
+     */
+    public function getAssignee()
+    {
+        return $this->assignee;
+    }
+
+    /**
+     *
+     * @return User
+     */
+    public function getReporter()
+    {
+        return $this->reporter;
+    }
+
+    /**
+     *
      * @param User $reporter            
      * @return \Model\Entity\Task
      */
@@ -119,10 +147,24 @@ class Task
         return $this;
     }
 
+    /**
+     *
+     * @return \DateTime
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
     public function toArray()
     {
         return array(
-            "id" => $this->id
+            "id" => $this->id,
+            "title" => $this->title,
+            "description" => $this->description,
+            "asignee" => $this->getAssignee()->getID(),
+            "reporter" => $this->getReporter()->getID(),
+            "created" => $this->getCreated()->getTimestamp(),
         );
     }
 }

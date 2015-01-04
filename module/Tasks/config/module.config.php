@@ -110,7 +110,9 @@ return array(
                 0 => 'GET',
                 1 => 'POST',
             ),
-            'collection_query_whitelist' => array(),
+            'collection_query_whitelist' => array(
+                0 => 'sort',
+            ),
             'page_size' => 25,
             'page_size_param' => null,
             'entity_class' => 'Tasks\\V1\\Rest\\Task\\TaskEntity',
@@ -239,7 +241,7 @@ return array(
                     'DELETE' => true,
                 ),
                 'collection' => array(
-                    'GET' => false,
+                    'GET' => true,
                     'POST' => true,
                     'PATCH' => false,
                     'PUT' => false,

@@ -115,14 +115,36 @@ class TaskResource extends AbstractResourceListener
     }
 
     /**
-     * Fetch all or a subset of resources
+     * metoda GET bez parametru
+     * Vrátí všechny tasky pouze pro roli ADMIN
+     * povolený parametr sort[asc|desc]
      *
      * @param array $params            
      * @return ApiProblem|mixed
      */
     public function fetchAll($params = array())
     {
-        return new ApiProblem(405, 'The GET method has not been defined for collections');
+        /* @var $user User */
+        $user = $this->userFacade->getUserByIdentity($this->getIdentity());
+        
+        if (! $user->hasRole(Role::ADMIN)) {
+            return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
+        }
+        
+        $sort = $params->sort == "desc" ? "desc" : "asc";
+        
+        $result = $this->taskFacade->getAll($sort);
+        
+        if (! empty($result)) {
+            $tasks = array();
+            foreach ($result as $task) {
+                $tasks[] = $task->toArray();
+            }
+            
+            return $tasks;
+        }
+        
+        return [];
     }
 
     /**
