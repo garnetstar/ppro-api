@@ -104,6 +104,7 @@ return array(
                 0 => 'GET',
                 1 => 'PUT',
                 2 => 'DELETE',
+                3 => 'PATCH',
             ),
             'collection_http_methods' => array(
                 0 => 'GET',
@@ -238,7 +239,7 @@ return array(
                 'entity' => array(
                     'GET' => true,
                     'POST' => false,
-                    'PATCH' => false,
+                    'PATCH' => true,
                     'PUT' => false,
                     'DELETE' => true,
                 ),

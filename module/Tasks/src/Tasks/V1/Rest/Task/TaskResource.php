@@ -200,15 +200,41 @@ class TaskResource extends AbstractResourceListener
     }
 
     /**
-     * Patch (partial in-place update) a resource
+     * metoda PATCH
      *
-     * @param mixed $id            
+     * role USER má právo editovat jen jím vytvořené tasky, status smí měnit i u tasků které jsou mu přiděleny
+     *
+     * @param int $id            
      * @param mixed $data            
      * @return ApiProblem|mixed
      */
     public function patch($id, $data)
     {
-        return new ApiProblem(405, 'The PATCH method has not been defined for individual resources');
+        $title = $this->getParameter("title", $data);
+        $description = $this->getParameter("description", $data);
+        $assigneeID = $this->getParameter("assignee", $data);
+        $reporterID = $this->getParameter("reporter", $data);
+        $statusID = $this->getParameter("status", $data);
+        
+        $user = $this->getUser();
+        
+        if (! $user->hasRole(Role::ADMIN)) {
+            
+            $task = $this->taskFacade->getTaskByID($id);
+            
+            if ($task->getReporter() != $user) {
+                
+                if ($task->getAssignee() == $user) {
+                    $title = $description = $assigneeID = $reporterID = null;
+                } else {
+                    return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
+                }
+            }
+        }
+        
+        $res = $this->taskFacade->updateTask($id, $title, $description, $assigneeID, $reporterID, $statusID);
+
+        return $res;
     }
 
     /**
@@ -242,5 +268,14 @@ class TaskResource extends AbstractResourceListener
     {
         /* @var $user User */
         return $this->userFacade->getUserByIdentity($this->getIdentity());
+    }
+
+    private function getParameter($paramName, $data)
+    {
+        if (isset($data->$paramName)) {
+            return $data->$paramName;
+        }
+        
+        return null;
     }
 }

@@ -87,4 +87,58 @@ class TaskFacade extends AbstractFacade
         $this->em->flush();
         return true;
     }
+
+    /**
+     * 
+     * @param unknown $taskID
+     * @param string $title
+     * @param string $description
+     * @param string $assigneeID
+     * @param string $reporterID
+     * @param string $statusID
+     * @return boolean
+     */
+    public function updateTask($taskID, $title = null, $description = null, $assigneeID = null, $reporterID = null, $statusID = null)
+    {
+        /* @var $task Task */
+        $task = $this->em->find(Task::class, $taskID);
+        
+        if (empty($task)) {
+            return false;
+        }
+                
+        if ($title) {
+            $task->setTitle($title);
+        }
+        
+        if ($description) {
+            $task->setDescription($description);
+        }
+        
+        if ($assigneeID) {
+            $assignee = $this->em->find(User::class, $assigneeID);
+            if ($assignee) {
+                $task->setAssignee($assignee);
+            }
+        }
+        
+        if ($reporterID) {
+            $reporter = $this->em->find(User::class, $reporterID);
+            if ($reporter) {
+                $task->setReporter($reporter);
+            }
+        }
+        
+        if($statusID){
+            $status = $this->em->find(Status::class, $statusID);
+            if ($status) {
+                $task->setStatus($status);
+            }
+        }
+        
+        $this->em->persist($task);
+        $this->em->flush();
+        
+        return true;
+    }
 }
