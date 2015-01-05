@@ -8,6 +8,7 @@ use Model\Facade\UserFacade;
 use Model\Entity\Role;
 use Model\Entity\User;
 use Model\Facade\GroupFacade;
+use Model\Entity\Group;
 
 class TaskResource extends AbstractResourceListener
 {
@@ -50,9 +51,7 @@ class TaskResource extends AbstractResourceListener
      */
     public function create($data)
     {
-        
-        /* @var $user User */
-        $user = $this->userFacade->getUserByIdentity($this->getIdentity());
+        $user = $this->getUser();
         
         $reporter = $this->userFacade->getUserByID($data->reporter);
         $assignee = $this->userFacade->getUserByID($data->assignee);
@@ -104,14 +103,17 @@ class TaskResource extends AbstractResourceListener
     }
 
     /**
-     * Fetch a resource
+     * Vrací jeden task podle parametru
+     * metoda GET
+     * 
+     * User může dostat pouze tasky ze svých skupin
      *
      * @param mixed $id            
      * @return ApiProblem|mixed
      */
     public function fetch($id)
     {
-        return new ApiProblem(405, 'The GET method has not been defined for individual resources');
+        // @todo
     }
 
     /**
@@ -129,8 +131,7 @@ class TaskResource extends AbstractResourceListener
      */
     public function fetchAll($params = array())
     {
-        /* @var $user User */
-        $user = $this->userFacade->getUserByIdentity($this->getIdentity());
+        $user = $this->getUser();
         
         $sort = $params->sort == "desc" ? "desc" : "asc";
         
@@ -143,18 +144,28 @@ class TaskResource extends AbstractResourceListener
             return (int) trim($piece);
         }, explode(",", $params->groups)) : array();
         
+        // user může vidět jen tasky z vlastních skupin
+        if (! $user->hasRole(Role::ADMIN)) {
+            $userGroups = $user->getGroups();
+            $userGroupIDs = array_map(function (Group $group)
+            {
+                return $group->getID();
+            }, $userGroups->toArray());
+            
+            $groups = array_intersect($groups, $userGroupIDs);
+        }
+        
         $result = $this->taskFacade->getAll($sort, $status, $assignee, $groups);
         
+        $tasks = array();
+        
         if (! empty($result)) {
-            $tasks = array();
             foreach ($result as $task) {
                 $tasks[] = $task->toArray();
             }
-            
-            return $tasks;
         }
         
-        return array();
+        return $tasks;
     }
 
     /**
@@ -190,5 +201,15 @@ class TaskResource extends AbstractResourceListener
     public function update($id, $data)
     {
         return new ApiProblem(405, 'The PUT method has not been defined for individual resources');
+    }
+
+    /**
+     *
+     * @return User
+     */
+    private function getUser()
+    {
+        /* @var $user User */
+        return $this->userFacade->getUserByIdentity($this->getIdentity());
     }
 }
