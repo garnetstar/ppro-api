@@ -4,7 +4,7 @@ namespace Model\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Model\Repository\TaskRepository")
  * @ORM\Table(name="task")
  */
 class Task
@@ -156,6 +156,15 @@ class Task
         return $this->created;
     }
 
+    /**
+     *
+     * @return Status
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
     public function toArray()
     {
         return array(
@@ -165,6 +174,8 @@ class Task
             "asignee" => $this->getAssignee()->getID(),
             "reporter" => $this->getReporter()->getID(),
             "created" => $this->getCreated()->getTimestamp(),
-        );
+            "status" => $this->getStatus()->getID(),
+        )
+        ;
     }
 }

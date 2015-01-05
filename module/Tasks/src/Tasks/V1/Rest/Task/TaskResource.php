@@ -117,7 +117,12 @@ class TaskResource extends AbstractResourceListener
     /**
      * metoda GET bez parametru
      * Vrátí všechny tasky pouze pro roli ADMIN
-     * povolený parametr sort[asc|desc]
+     * Pro roli USER vrací pouze tasky z jeho skupin
+     * povolené parametry:
+     * sort[asc|desc]
+     * status:statusID
+     * assignee:userID uživatele kterému byl task přidělen
+     * groups: groupID oddělené čárkou
      *
      * @param array $params            
      * @return ApiProblem|mixed
@@ -127,13 +132,18 @@ class TaskResource extends AbstractResourceListener
         /* @var $user User */
         $user = $this->userFacade->getUserByIdentity($this->getIdentity());
         
-        if (! $user->hasRole(Role::ADMIN)) {
-            return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
-        }
-        
         $sort = $params->sort == "desc" ? "desc" : "asc";
         
-        $result = $this->taskFacade->getAll($sort);
+        $status = isset($params->status) ? (int) $params->status : null;
+        
+        $assignee = isset($params->assignee) ? (int) $params->assignee : null;
+        
+        $groups = isset($params->groups) ? array_map(function ($piece)
+        {
+            return (int) trim($piece);
+        }, explode(",", $params->groups)) : array();
+        
+        $result = $this->taskFacade->getAll($sort, $status, $assignee, $groups);
         
         if (! empty($result)) {
             $tasks = array();
@@ -144,7 +154,7 @@ class TaskResource extends AbstractResourceListener
             return $tasks;
         }
         
-        return [];
+        return array();
     }
 
     /**

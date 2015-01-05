@@ -22,7 +22,7 @@ class Status
      * @ORM\OneToMany(targetEntity="Task", mappedBy="status")
      */
     protected $tasks;
-    
+
     /**
      * @ORM\Column(type="string")
      */
@@ -32,28 +32,34 @@ class Status
     {
         $this->tasks = new ArrayCollection();
     }
-    
+
     /**
-     * 
+     *
+     * @return int
+     */
+    public function getID()
+    {
+        return $this->id;
+    }
+
+    /**
+     *
      * @return string
      */
-	public function getName()
+    public function getName()
     {
         return $this->name;
     }
 
     /**
-     * 
-     * @param string $name
+     *
+     * @param string $name            
      * @return \Model\Entity\Status
      */
-	public function setName($name)
+    public function setName($name)
     {
         $this->name = $name;
         return $this;
     }
-
-    
-    
 }
 

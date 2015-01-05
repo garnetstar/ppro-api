@@ -102,9 +102,8 @@ return array(
             'collection_name' => 'task',
             'entity_http_methods' => array(
                 0 => 'GET',
-                1 => 'PATCH',
-                2 => 'PUT',
-                3 => 'DELETE',
+                1 => 'PUT',
+                2 => 'DELETE',
             ),
             'collection_http_methods' => array(
                 0 => 'GET',
@@ -112,6 +111,9 @@ return array(
             ),
             'collection_query_whitelist' => array(
                 0 => 'sort',
+                1 => 'status',
+                2 => 'assignee',
+                3 => 'groups',
             ),
             'page_size' => 25,
             'page_size_param' => null,

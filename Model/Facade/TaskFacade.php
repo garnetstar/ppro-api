@@ -4,6 +4,7 @@ namespace Model\Facade;
 use Model\Entity\Status;
 use Model\Entity\User;
 use Model\Entity\Task;
+use Model\Repository\TaskRepository;
 
 /**
  *
@@ -42,14 +43,20 @@ class TaskFacade extends AbstractFacade
     }
 
     /**
-     * 
-     * @param string $sort
+     *
+     * @param string $sort            
+     * @param string $statusID            
+     * @param string $assigneeID            
+     * @param array $groupIDs            
      * @return Task[]
      */
-    public function getAll($sort = "asc")
+    public function getAll($sort = "asc", $statusID = null, $assigneeID = null, $groupIDs = array())
     {
-        return $this->em->getRepository(Task::class)->findBy(array(), array(
-            "created" => $sort
-        ));
+        /* @var $repo TaskRepository */
+        $repo = $this->em->getRepository(Task::class);
+        
+        $res = $repo->getAll($sort, $statusID, $assigneeID, $groupIDs);
+        
+        return $res;
     }
 }
