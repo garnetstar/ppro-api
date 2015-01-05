@@ -59,4 +59,32 @@ class TaskFacade extends AbstractFacade
         
         return $res;
     }
+
+    /**
+     *
+     * @param int $taskID            
+     * @return Task|null
+     */
+    public function getTaskByID($taskID)
+    {
+        return $this->em->find(Task::class, $taskID);
+    }
+
+    /**
+     *
+     * @param id $taskID            
+     * @return boolean
+     */
+    public function deleteTask($taskID)
+    {
+        $task = $this->em->find(Task::class, $taskID);
+        
+        if (! $task) {
+            return false;
+        }
+        
+        $this->em->remove($task);
+        $this->em->flush();
+        return true;
+    }
 }

@@ -236,7 +236,7 @@ return array(
             ),
             'Tasks\\V1\\Rest\\Task\\Controller' => array(
                 'entity' => array(
-                    'GET' => false,
+                    'GET' => true,
                     'POST' => false,
                     'PATCH' => false,
                     'PUT' => false,

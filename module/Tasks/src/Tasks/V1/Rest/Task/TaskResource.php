@@ -81,14 +81,30 @@ class TaskResource extends AbstractResourceListener
     }
 
     /**
-     * Delete a resource
+     * metoda DELETE
+     *
+     * USER smí mazat pouze tasky které sám vytvořil
      *
      * @param mixed $id            
      * @return ApiProblem|mixed
      */
     public function delete($id)
     {
-        return new ApiProblem(405, 'The DELETE method has not been defined for individual resources');
+        $user = $this->getUser();
+        
+        $task = $this->taskFacade->getTaskByID($id);
+        
+        if (empty($task)) {
+            return false;
+        }
+        
+        if (! $user->hasRole(Role::ADMIN)) {
+            if ($task->getReporter() != $user) {
+                return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
+            }
+        }
+        
+        return $this->taskFacade->deleteTask($id);
     }
 
     /**
@@ -105,7 +121,7 @@ class TaskResource extends AbstractResourceListener
     /**
      * Vrací jeden task podle parametru
      * metoda GET
-     * 
+     *
      * User může dostat pouze tasky ze svých skupin
      *
      * @param mixed $id            
@@ -113,7 +129,22 @@ class TaskResource extends AbstractResourceListener
      */
     public function fetch($id)
     {
-        // @todo
+        $user = $this->getUser();
+        
+        $task = $this->taskFacade->getTaskByID($id);
+        
+        // User má právo dostat task jehož assignee nebo reporter jsou ve stejné skupině
+        if (! $user->hasRole(Role::ADMIN)) {
+            if (! ($this->groupFacade->isInGroup($user, $task->getAssignee()) || $this->groupFacade->isInGroup($user, $task->getReporter()))) {
+                return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
+            }
+        }
+        
+        if (! empty($task)) {
+            return $task->toArray();
+        }
+        
+        return false;
     }
 
     /**

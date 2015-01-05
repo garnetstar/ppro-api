@@ -86,5 +86,6 @@ class UserFacade extends AbstractFacade
     {
         return $this->em->getRepository(User::class)->findAll();
     }
+    
 }
 

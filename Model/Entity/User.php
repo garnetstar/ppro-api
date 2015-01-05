@@ -242,7 +242,7 @@ class User
             "roleID" => $this->role->getID(),
             "role" => $this->role->getName(),
             "groupIDs" => $groupIDs,
-            "groups" => $groupNames,
+            "groups" => $groupNames
         );
     }
 }
