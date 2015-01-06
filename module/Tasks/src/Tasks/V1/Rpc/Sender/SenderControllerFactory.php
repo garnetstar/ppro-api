@@ -8,9 +8,9 @@ class SenderControllerFactory
     {
         $sl = $controllers->getServiceLocator();
         
-        $taskFacade = $sl->get('Model\Facade\TaskFacade');
         $messageFacade = $sl->get('Model\Facade\MessageFacade');
+        $sender = $sl->get('textSender');
         
-        return new SenderController($messageFacade, $taskFacade);
+        return new SenderController($messageFacade, $sender);
     }
 }

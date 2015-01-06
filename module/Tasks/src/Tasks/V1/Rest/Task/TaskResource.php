@@ -86,7 +86,7 @@ class TaskResource extends AbstractResourceListener
         
         $task = $this->taskFacade->addTask($data->title, $data->description, $data->reporter, $data->assignee, $data->status);
         
-        if ($data->sendMessage) {
+        if (isset($data->sendMessage)) {
             $this->messageFacade->createMessage($task->getID(), MessageType::CREATE);
         }
         

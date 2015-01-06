@@ -1,4 +1,5 @@
 <?php
+use Lib\TextSender;
 return array(
     'router' => array(
         'routes' => array(
@@ -71,6 +72,10 @@ return array(
             'Model\\Facade\\MessageFacade' => 'Model\\Factory\\MessageFacadeFactory',
             'Tasks\\V1\\Rest\\Group\\GroupResource' => 'Tasks\\V1\\Rest\\Group\\GroupResourceFactory',
             'Tasks\\V1\\Rest\\Task\\TaskResource' => 'Tasks\\V1\\Rest\\Task\\TaskResourceFactory',
+            
+        ),
+        'services' => array(
+            'textSender' => new TextSender('/home/jan/uhk/ppro/messages.txt')
         ),
     ),
     'zf-rest' => array(

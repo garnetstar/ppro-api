@@ -4,6 +4,7 @@ namespace Model\Facade;
 use Model\Entity\Message;
 use Model\Entity\MessageType;
 use Model\Entity\Task;
+use Model\Repository\MessageRepository;
 
 /**
  *
@@ -38,5 +39,28 @@ class MessageFacade extends AbstractFacade
         $this->em->flush();
         
         return $task;
+    }
+
+    /**
+     *
+     * @return Message[]
+     */
+    public function getMessagesToSend()
+    {
+        /* @var $rep MessageRepository */
+        $rep = $this->em->getRepository(Message::class);
+        
+        return $rep->getMessagesToSend();
+    }
+
+    /**
+     * 
+     * @param Message $message
+     */
+    public function updateProcesset(Message $message)
+    {
+        $message->setProcessed(new \DateTime());
+        $this->em->persist($message);
+        $this->em->flush();
     }
 }

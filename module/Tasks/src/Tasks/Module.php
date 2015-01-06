@@ -18,6 +18,7 @@ class Module implements ApigilityProviderInterface
                     __NAMESPACE__ => __DIR__,
                     "Doctrine" => __DIR__."/../../../../Doctrine",
                     "Model" => __DIR__."/../../../../Model",
+                    "Lib" => __DIR__."/../../../../Lib",
                 ),
             ),
         );

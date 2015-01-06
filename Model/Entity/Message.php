@@ -4,7 +4,7 @@ namespace Model\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Model\Repository\MessageRepository")
  * @ORM\Table(name="message")
  */
 class Message
@@ -57,6 +57,17 @@ class Message
 
     /**
      *
+     * @param \DateTime $dateTime            
+     * @return \Model\Entity\Message
+     */
+    public function setProcessed(\DateTime $dateTime)
+    {
+        $this->processed = $dateTime;
+        return $this;
+    }
+
+    /**
+     *
      * @param Task $task            
      * @return \Model\Entity\Message
      */
@@ -75,5 +86,23 @@ class Message
     {
         $this->messageType = $messageType;
         return $this;
+    }
+
+    /**
+     *
+     * @return Task
+     */
+    public function getTask()
+    {
+        return $this->task;
+    }
+
+    /**
+     *
+     * @return MessageType
+     */
+    public function getMessageType()
+    {
+        return $this->messageType;
     }
 }
