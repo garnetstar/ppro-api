@@ -29,6 +29,16 @@ return array(
                     ),
                 ),
             ),
+            'tasks.rpc.sender' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/sender',
+                    'defaults' => array(
+                        'controller' => 'Tasks\\V1\\Rpc\\Sender\\Controller',
+                        'action' => 'sender',
+                    ),
+                ),
+            ),
         ),
     ),
     'zf-versioning' => array(
@@ -36,6 +46,7 @@ return array(
             0 => 'tasks.rest.user',
             1 => 'tasks.rest.group',
             2 => 'tasks.rest.task',
+            3 => 'tasks.rpc.sender',
         ),
     ),
     'service_manager' => array(
@@ -128,6 +139,7 @@ return array(
             'Tasks\\V1\\Rest\\User\\Controller' => 'HalJson',
             'Tasks\\V1\\Rest\\Group\\Controller' => 'HalJson',
             'Tasks\\V1\\Rest\\Task\\Controller' => 'HalJson',
+            'Tasks\\V1\\Rpc\\Sender\\Controller' => 'Json',
         ),
         'accept_whitelist' => array(
             'Tasks\\V1\\Rest\\User\\Controller' => array(
@@ -145,6 +157,11 @@ return array(
                 1 => 'application/hal+json',
                 2 => 'application/json',
             ),
+            'Tasks\\V1\\Rpc\\Sender\\Controller' => array(
+                0 => 'application/vnd.tasks.v1+json',
+                1 => 'application/json',
+                2 => 'application/*+json',
+            ),
         ),
         'content_type_whitelist' => array(
             'Tasks\\V1\\Rest\\User\\Controller' => array(
@@ -156,6 +173,10 @@ return array(
                 1 => 'application/json',
             ),
             'Tasks\\V1\\Rest\\Task\\Controller' => array(
+                0 => 'application/vnd.tasks.v1+json',
+                1 => 'application/json',
+            ),
+            'Tasks\\V1\\Rpc\\Sender\\Controller' => array(
                 0 => 'application/vnd.tasks.v1+json',
                 1 => 'application/json',
             ),
@@ -376,6 +397,21 @@ id entit Group oddělených čárkou.',
                 'allow_empty' => false,
                 'continue_if_empty' => false,
             ),
+        ),
+    ),
+    'controllers' => array(
+        'factories' => array(
+            'Tasks\\V1\\Rpc\\Sender\\Controller' => 'Tasks\\V1\\Rpc\\Sender\\SenderControllerFactory',
+            'Model\\Facade\\TaskFacade' => 'Model\\Factory\\TaskFacadeFactory',
+        ),
+    ),
+    'zf-rpc' => array(
+        'Tasks\\V1\\Rpc\\Sender\\Controller' => array(
+            'service_name' => 'Sender',
+            'http_methods' => array(
+                0 => 'GET',
+            ),
+            'route_name' => 'tasks.rpc.sender',
         ),
     ),
 );
