@@ -64,7 +64,7 @@ class UserResource extends AbstractResourceListener
                     return new ApiProblem(400, sprintf('Nepodařilo se najít odpovídající Roli podle \'%s\'', $data->role));
             }
             
-            $user = $this->userFacade->addUser($data->username, sha1($data->password), $data->name, $data->surname, $roleID, $groups);
+            $user = $this->userFacade->addUser($data->username, sha1($data->password), $data->name, $data->surname, $roleID, $groups, $data->email);
             
             return array(
                 "id" => $user->getId()

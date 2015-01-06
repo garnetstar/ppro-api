@@ -43,6 +43,11 @@ class User
      * @ORM\Column(type="string")
      */
     protected $surname;
+    
+    /**
+     * @ORM\Column(type="string")
+     */
+    protected $email;
 
     /**
      * @ORM\Column(type="string")
@@ -191,8 +196,25 @@ class User
         $this->groups = $groups;
         return $this;
     }
+    
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
 
     /**
+     * 
+     * @param string $email
+     * @return \Model\Entity\User
+     */
+	public function setEmail($email)
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+	/**
      *
      * @param string $accessTokens            
      * @return \Model\Entity\User

@@ -39,6 +39,16 @@ return array(
                     ),
                 ),
             ),
+            'tasks.rpc.deletetasks' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/delete-all-tasks',
+                    'defaults' => array(
+                        'controller' => 'Tasks\\V1\\Rpc\\Deletetasks\\Controller',
+                        'action' => 'deletetasks',
+                    ),
+                ),
+            ),
         ),
     ),
     'zf-versioning' => array(
@@ -47,6 +57,7 @@ return array(
             1 => 'tasks.rest.group',
             2 => 'tasks.rest.task',
             3 => 'tasks.rpc.sender',
+            4 => 'tasks.rpc.deletetasks',
         ),
     ),
     'service_manager' => array(
@@ -57,6 +68,7 @@ return array(
             'Model\\Facade\\UserFacade' => 'Model\\Factory\\UserFacadeFactory',
             'Model\\Facade\\GroupFacade' => 'Model\\Factory\\GroupFacadeFactory',
             'Model\\Facade\\TaskFacade' => 'Model\\Factory\\TaskFacadeFactory',
+            'Model\\Facade\\MessageFacade' => 'Model\\Factory\\MessageFacadeFactory',
             'Tasks\\V1\\Rest\\Group\\GroupResource' => 'Tasks\\V1\\Rest\\Group\\GroupResourceFactory',
             'Tasks\\V1\\Rest\\Task\\TaskResource' => 'Tasks\\V1\\Rest\\Task\\TaskResourceFactory',
         ),
@@ -126,6 +138,7 @@ return array(
                 1 => 'status',
                 2 => 'assignee',
                 3 => 'groups',
+                4 => 'sendMessage',
             ),
             'page_size' => 25,
             'page_size_param' => null,
@@ -140,6 +153,7 @@ return array(
             'Tasks\\V1\\Rest\\Group\\Controller' => 'HalJson',
             'Tasks\\V1\\Rest\\Task\\Controller' => 'HalJson',
             'Tasks\\V1\\Rpc\\Sender\\Controller' => 'Json',
+            'Tasks\\V1\\Rpc\\Deletetasks\\Controller' => 'Json',
         ),
         'accept_whitelist' => array(
             'Tasks\\V1\\Rest\\User\\Controller' => array(
@@ -162,6 +176,11 @@ return array(
                 1 => 'application/json',
                 2 => 'application/*+json',
             ),
+            'Tasks\\V1\\Rpc\\Deletetasks\\Controller' => array(
+                0 => 'application/vnd.tasks.v1+json',
+                1 => 'application/json',
+                2 => 'application/*+json',
+            ),
         ),
         'content_type_whitelist' => array(
             'Tasks\\V1\\Rest\\User\\Controller' => array(
@@ -177,6 +196,10 @@ return array(
                 1 => 'application/json',
             ),
             'Tasks\\V1\\Rpc\\Sender\\Controller' => array(
+                0 => 'application/vnd.tasks.v1+json',
+                1 => 'application/json',
+            ),
+            'Tasks\\V1\\Rpc\\Deletetasks\\Controller' => array(
                 0 => 'application/vnd.tasks.v1+json',
                 1 => 'application/json',
             ),
@@ -344,6 +367,17 @@ id entit Group oddělených čárkou.',
                 'allow_empty' => false,
                 'continue_if_empty' => false,
             ),
+            6 => array(
+                'name' => 'email',
+                'required' => true,
+                'filters' => array(),
+                'validators' => array(
+                    0 => array(
+                        'name' => 'Zend\\Validator\\EmailAddress',
+                        'options' => array(),
+                    ),
+                ),
+            ),
         ),
         'Tasks\\V1\\Rest\\Group\\Validator' => array(
             0 => array(
@@ -397,12 +431,27 @@ id entit Group oddělených čárkou.',
                 'allow_empty' => false,
                 'continue_if_empty' => false,
             ),
+            5 => array(
+                'name' => 'sendMessage',
+                'required' => false,
+                'filters' => array(),
+                'validators' => array(
+                    0 => array(
+                        'name' => 'Zend\\Validator\\Regex',
+                        'options' => array(
+                            'pattern' => '/^(1)$/',
+                        ),
+                    ),
+                ),
+                'allow_empty' => true,
+                'continue_if_empty' => true,
+            ),
         ),
     ),
     'controllers' => array(
         'factories' => array(
             'Tasks\\V1\\Rpc\\Sender\\Controller' => 'Tasks\\V1\\Rpc\\Sender\\SenderControllerFactory',
-            'Model\\Facade\\TaskFacade' => 'Model\\Factory\\TaskFacadeFactory',
+            'Tasks\\V1\\Rpc\\Deletetasks\\Controller' => 'Tasks\\V1\\Rpc\\Deletetasks\\DeletetasksControllerFactory',
         ),
     ),
     'zf-rpc' => array(
@@ -412,6 +461,13 @@ id entit Group oddělených čárkou.',
                 0 => 'GET',
             ),
             'route_name' => 'tasks.rpc.sender',
+        ),
+        'Tasks\\V1\\Rpc\\Deletetasks\\Controller' => array(
+            'service_name' => 'Deletetasks',
+            'http_methods' => array(
+                0 => 'GET',
+            ),
+            'route_name' => 'tasks.rpc.deletetasks',
         ),
     ),
 );

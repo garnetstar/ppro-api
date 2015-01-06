@@ -36,6 +36,11 @@ class Task
     protected $status;
 
     /**
+     * @ORM\OneToMany(targetEntity="Message", mappedBy="task", cascade={"remove"})
+     */
+    protected $messages;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $created;
@@ -53,6 +58,11 @@ class Task
     public function __construct()
     {
         $this->created = new \DateTime();
+    }
+
+    public function getID()
+    {
+        return $this->id;
     }
 
     public function getTitle()
@@ -174,8 +184,7 @@ class Task
             "asignee" => $this->getAssignee()->getID(),
             "reporter" => $this->getReporter()->getID(),
             "created" => $this->getCreated()->getTimestamp(),
-            "status" => $this->getStatus()->getID(),
-        )
-        ;
+            "status" => $this->getStatus()->getID()
+        );
     }
 }

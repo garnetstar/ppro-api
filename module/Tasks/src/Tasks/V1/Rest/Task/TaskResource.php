@@ -9,6 +9,8 @@ use Model\Entity\Role;
 use Model\Entity\User;
 use Model\Facade\GroupFacade;
 use Model\Entity\Group;
+use Model\Facade\MessageFacade;
+use Model\Entity\MessageType;
 
 class TaskResource extends AbstractResourceListener
 {
@@ -31,11 +33,18 @@ class TaskResource extends AbstractResourceListener
      */
     private $groupFacade;
 
-    public function __construct($taskFacade, $userFacade, $groupFacade)
+    /**
+     *
+     * @var MessageFacade
+     */
+    private $messageFacade;
+
+    public function __construct($taskFacade, $userFacade, $groupFacade, $messageFacade)
     {
         $this->taskFacade = $taskFacade;
         $this->userFacade = $userFacade;
         $this->groupFacade = $groupFacade;
+        $this->messageFacade = $messageFacade;
     }
 
     /**
@@ -76,6 +85,10 @@ class TaskResource extends AbstractResourceListener
         }
         
         $task = $this->taskFacade->addTask($data->title, $data->description, $data->reporter, $data->assignee, $data->status);
+        
+        if ($data->sendMessage) {
+            $this->messageFacade->createMessage($task->getID(), MessageType::CREATE);
+        }
         
         return $task->toArray();
     }
@@ -215,12 +228,17 @@ class TaskResource extends AbstractResourceListener
         $assigneeID = $this->getParameter("assignee", $data);
         $reporterID = $this->getParameter("reporter", $data);
         $statusID = $this->getParameter("status", $data);
+        $sendMessage = $this->getParameter("sendMessage", $data);
         
         $user = $this->getUser();
         
+        $task = $this->taskFacade->getTaskByID($id);
+        
+        if (! $task) {
+            return false;
+        }
+        
         if (! $user->hasRole(Role::ADMIN)) {
-            
-            $task = $this->taskFacade->getTaskByID($id);
             
             if ($task->getReporter() != $user) {
                 
@@ -232,8 +250,13 @@ class TaskResource extends AbstractResourceListener
             }
         }
         
+        // pokud byl změněn status, poslat message
+        if($statusID && $statusID != $task->getStatus()->getID() && $sendMessage){
+            $this->messageFacade->createMessage($task->getID(), MessageType::CHANGE_STATUS);
+        }
+        
         $res = $this->taskFacade->updateTask($id, $title, $description, $assigneeID, $reporterID, $statusID);
-
+        
         return $res;
     }
 

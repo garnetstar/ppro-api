@@ -34,7 +34,7 @@ class UserFacade extends AbstractFacade
      * @param unknown $roleID            
      * @param array $groupIds            
      */
-    public function addUser($username, $password, $name, $surname, $roleID, array $groups)
+    public function addUser($username, $password, $name, $surname, $roleID, array $groups, $email)
     {
         $role = $this->em->getPartialReference(Role::class, $roleID);
         
@@ -44,7 +44,8 @@ class UserFacade extends AbstractFacade
             ->setName($name)
             ->setSurname($surname)
             ->setRole($role)
-            ->setGroups($groups);
+            ->setGroups($groups)
+            ->setEmail($email);
         
         $this->em->persist($user);
         $this->em->flush();

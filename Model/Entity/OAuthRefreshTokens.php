@@ -16,7 +16,7 @@ class OAuthRefreshTokens
     private $refreshToken;
     
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="accessTokens")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="refreshTokens")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      */
     private $user;
