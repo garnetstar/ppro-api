@@ -15,7 +15,7 @@ class UserResource extends AbstractResourceListener
      *
      * @var UserFacade
      */
-    private $facade;
+    private $userFacade;
 
     /**
      *
@@ -25,7 +25,7 @@ class UserResource extends AbstractResourceListener
 
     public function __construct(UserFacade $facade, GroupFacade $groupFacade)
     {
-        $this->facade = $facade;
+        $this->userFacade = $facade;
         $this->groupFacade = $groupFacade;
     }
 
@@ -38,7 +38,7 @@ class UserResource extends AbstractResourceListener
     public function create($data)
     {
         /* @var $user User */
-        $user = $this->facade->getUserByIdentity($this->getIdentity());
+        $user = $this->userFacade->getUserByIdentity($this->getIdentity());
         
         if ($user->hasRole(Role::ADMIN)) {
             
@@ -64,7 +64,7 @@ class UserResource extends AbstractResourceListener
                     return new ApiProblem(400, sprintf('Nepodařilo se najít odpovídající Roli podle \'%s\'', $data->role));
             }
             
-            $user = $this->facade->addUser($data->username, sha1($data->password), $data->name, $data->surname, $roleID, $groups);
+            $user = $this->userFacade->addUser($data->username, sha1($data->password), $data->name, $data->surname, $roleID, $groups);
             
             return array(
                 "id" => $user->getId()
@@ -83,10 +83,10 @@ class UserResource extends AbstractResourceListener
     public function delete($id)
     {
         /* @var $user User */
-        $user = $this->facade->getUserByIdentity($this->getIdentity());
+        $user = $this->userFacade->getUserByIdentity($this->getIdentity());
         
         if ($user->hasRole(Role::ADMIN)) {
-            return $this->facade->deleteUser($id);
+            return $this->userFacade->deleteUser($id);
         } else {
             return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
         }
@@ -111,9 +111,9 @@ class UserResource extends AbstractResourceListener
      */
     public function fetch($id)
     {
-        $user = $this->facade->getUserByIdentity($this->getIdentity());
+        $user = $this->userFacade->getUserByIdentity($this->getIdentity());
         if ($user->hasRole(Role::ADMIN) || $id == $user->getId()) {
-            $returnUser = $this->facade->getUserByID($id);
+            $returnUser = $this->userFacade->getUserByID($id);
             if ($returnUser) {
                 return $returnUser->toArray();
             }
@@ -131,10 +131,10 @@ class UserResource extends AbstractResourceListener
      */
     public function fetchAll($params = array())
     {
-        $user = $this->facade->getUserByIdentity($this->getIdentity());
+        $user = $this->userFacade->getUserByIdentity($this->getIdentity());
         
         if ($user->hasRole(Role::ADMIN)) {
-            $users = $this->facade->getAll();
+            $users = $this->userFacade->getAll();
             $usersArray = [];
             foreach ($users as $user) {
                 $usersArray[] = $user->toArray();
@@ -147,7 +147,9 @@ class UserResource extends AbstractResourceListener
     }
 
     /**
-     * Patch (partial in-place update) a resource
+     * metoda PATCH
+     * 
+     * role USER může updatovat pouze sama sebe
      *
      * @param mixed $id            
      * @param mixed $data            
@@ -155,7 +157,22 @@ class UserResource extends AbstractResourceListener
      */
     public function patch($id, $data)
     {
-        return new ApiProblem(405, 'The PATCH method has not been defined for individual resources');
+        $name = $this->getParameter("name", $data);
+        $surname = $this->getParameter("surname", $data);
+        $username = $this->getParameter("username", $data);
+        $password = sha1($this->getParameter("password", $data));
+        
+        $user = $this->getUser();
+        
+        if (! $user->hasRole(Role::ADMIN)) {
+            if ($user->getID() != $id) {
+                return new ApiProblem(403, 'K provedení této akce nemáte dostatečná oprávnění');
+            }
+        }
+        
+        $res = $this->userFacade->updateUser($id, $name, $surname, $username, $password);
+        
+        return $res;
     }
 
     /**
@@ -179,5 +196,24 @@ class UserResource extends AbstractResourceListener
     public function update($id, $data)
     {
         return new ApiProblem(405, 'The PUT method has not been defined for individual resources');
+    }
+
+    private function getParameter($paramName, $data)
+    {
+        if (isset($data->$paramName)) {
+            return $data->$paramName;
+        }
+        
+        return null;
+    }
+
+    /**
+     *
+     * @return User
+     */
+    private function getUser()
+    {
+        /* @var $user User */
+        return $this->userFacade->getUserByIdentity($this->getIdentity());
     }
 }

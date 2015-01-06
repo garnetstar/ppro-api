@@ -80,12 +80,43 @@ class UserFacade extends AbstractFacade
     }
 
     /**
+     *
      * @return User[]
      */
     public function getAll()
     {
         return $this->em->getRepository(User::class)->findAll();
     }
-    
+
+    public function updateUser($userID, $name = null, $surname = null, $username = null, $password = null, $groups = array())
+    {
+        /* @var $user User */
+        $user = $this->em->find(User::class, $userID);
+        
+        if (! $user) {
+            return false;
+        }
+        
+        if ($name) {
+            $user->setName($name);
+        }
+        
+        if ($surname) {
+            $user->setSurname($surname);
+        }
+        
+        if ($username) {
+            $user->setUsername($username);
+        }
+        
+        if ($password) {
+            $user->setPassword($password);
+        }
+        
+        $this->em->persist($user);
+        $this->em->flush();
+        
+        return true;
+    }
 }
 
