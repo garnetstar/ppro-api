@@ -1,4 +1,5 @@
 {
+  "name" : "garnetstar/ppro-api",
   "description" : "Skeleton Application for Apigility",
   "require" : {
     "php" : ">=5.3.23",
